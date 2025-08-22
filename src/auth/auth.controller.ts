@@ -5,7 +5,9 @@ import {
   Get,
   Query,
   BadRequestException,
+  Res,
 } from "@nestjs/common";
+import { Response } from "express";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 
@@ -25,11 +27,15 @@ export class AuthController {
   }
 
   @Get("confirm")
-  async confirm(@Query("token") token: string) {
+  async confirm(@Query("token") token: string, @Res() res: Response) {
     try {
-      return await this.authService.confirmAccount(token);
+      await this.authService.confirmAccount(token);
+      // Redirect to frontend login page after successful confirmation
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+      return res.redirect(`${frontendUrl}/login?confirmed=1`);
     } catch (err: any) {
-      throw new BadRequestException(err?.message || "Confirmation failed");
+      // Optionally, redirect to an error page or return a message
+      return res.status(400).send(err?.message || "Confirmation failed");
     }
   }
 }

@@ -41,8 +41,8 @@ export class AuthService {
     });
 
     // Send confirmation email
-    const apiUrl = process.env.FRONTEND_URL || "http://localhost:3001";
-    const confirmUrl = `${apiUrl}/confirm?token=${confirmationToken}`;
+    const apiUrl = process.env.BACKEND_URL || "http://localhost:3000";
+    const confirmUrl = `${apiUrl}/auth/confirm?token=${confirmationToken}`;
 
     // Configure nodemailer transporter (use environment variables for real credentials)
     const transporter = nodemailer.createTransport({
