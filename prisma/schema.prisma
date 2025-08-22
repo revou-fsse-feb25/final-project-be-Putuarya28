@@ -1,0 +1,74 @@
+model PendingUser {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String?
+  hashedPassword String
+  confirmationToken String @unique
+  createdAt     DateTime @default(now())
+}
+datasource db {
+  provider = "postgresql" // or "mysql" or "sqlite" etc.
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AvailableDate {
+  id    Int    @id @default(autoincrement())
+  date  DateTime @unique
+}
+
+model Booking {
+  id          Int     @id @default(autoincrement())
+  name        String
+  email       String
+  whatsapp    String
+  date        String
+  time        String
+  notes       String?
+  status      String  @default("pending")
+  orderDetails Json?
+  postCallDetails Json?
+  customerId  Int
+  customer    User     @relation(fields: [customerId], references: [id])
+  createdAt   DateTime @default(now())
+  serviceType      String?
+  measurementType  String?
+  size             String?
+  bust             String?
+  waist            String?
+  hip              String?
+  shoulder         String?
+  sleeve           String?
+  kebayaLength     String?
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  password   String
+  role       String?
+  name       String?
+  profilePic String?
+  isConfirmed Boolean  @default(false)
+  confirmationToken String?
+  bookings   Booking[] // This line enables the relation from the other side
+}
+
+model DesignImage {
+  id          Int      @id @default(autoincrement())
+  label       String   // e.g. "kartini", "bordir"
+  title       String?
+  description String?
+  imageUrl    String
+  createdAt   DateTime @default(now())
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  customerId  Int
+  createdAt   DateTime @default(now())
+  orderDetails Json?
+}

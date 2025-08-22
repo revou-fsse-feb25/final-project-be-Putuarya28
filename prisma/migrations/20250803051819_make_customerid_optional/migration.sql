@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "public"."Booking" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "customerId" INTEGER;
