@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DesignImagesController } from "./design-images.controller";
 import { DesignImagesService } from "./design-images.service";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 describe("DesignImagesController", () => {
   let controller: DesignImagesController;
@@ -9,7 +10,10 @@ describe("DesignImagesController", () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DesignImagesController],
       providers: [DesignImagesService],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<DesignImagesController>(DesignImagesController);
   });
@@ -18,4 +22,3 @@ describe("DesignImagesController", () => {
     expect(controller).toBeDefined();
   });
 });
-

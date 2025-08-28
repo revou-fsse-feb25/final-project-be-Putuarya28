@@ -3,9 +3,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendOrderDetailsEmail = sendOrderDetailsEmail;
 exports.sendPostCallNotesEmail = sendPostCallNotesEmail;
 exports.sendConfirmationEmail = sendConfirmationEmail;
 exports.sendRescheduleEmail = sendRescheduleEmail;
+async function sendOrderDetailsEmail(to, booking, orderDetails) {
+    const transporter = require("nodemailer").createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+    // Format orderDetails object into readable lines
+    let detailsText = Object.entries(orderDetails)
+        .map(([key, value]) => `- ${key
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase())}: ${value}`)
+        .join("\n");
+    await transporter.sendMail({
+        from: `"Luh Suastini Kebaya" <${process.env.EMAIL_USER}>`,
+        to,
+        subject: "Order Details & Next Steps",
+        text: `Hi ${booking.name},\n\nHere are the details of your order as discussed and finalized after our meeting:\n\n${detailsText}\n\nIf you have any questions or need further clarification, feel free to reply to this email or contact us at +6285923478226.\n\nBest regards,\nLuh Suastini Kebaya`,
+    });
+}
 async function sendPostCallNotesEmail(to, booking, details) {
     const transporter = nodemailer_1.default.createTransport({
         service: "gmail",

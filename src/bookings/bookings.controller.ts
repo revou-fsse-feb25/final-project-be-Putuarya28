@@ -27,7 +27,6 @@ export class BookingsController {
     @Body() createBookingDto: CreateBookingDto,
     @Req() req: Request
   ) {
-    
     const userId = (req as any).user?.id;
     console.log("BookingController: Received booking request", {
       createBookingDto,
@@ -49,14 +48,22 @@ export class BookingsController {
     return this.bookingsService.findAll();
   }
 
-  
   @Get("customer/:customerId")
   @UseGuards(JwtAuthGuard)
-  async getCustomerBookings(@Param("customerId") customerId: string) {
+  async getCustomerBookings(
+    @Param("customerId") customerId: string,
+    @Req() req: Request
+  ) {
+    const user = (req as any).user;
+    console.log(
+      "[DEBUG] getCustomerBookings - User from JWT:",
+      user,
+      "customerId param:",
+      customerId
+    );
     return this.bookingsService.findByCustomer(Number(customerId));
   }
 
-  
   @Patch(":id")
   @UseGuards(JwtAuthGuard)
   async update(
@@ -64,19 +71,21 @@ export class BookingsController {
     @Body() updateDto: any,
     @Req() req: Request
   ) {
-    
     const user = (req as any).user;
+    console.log("[DEBUG] User from JWT:", user);
     if (!user) throw new UnauthorizedException("User not authenticated");
-    
+
     const booking = await this.bookingsService.findById(Number(id));
     if (!booking) throw new UnauthorizedException("Booking not found");
-    if (user.role !== "admin" && booking.customerId !== user.id) {
+    if (user.role === "admin") {
+      // Admin can update any booking
+    } else if (booking.customerId !== user.id) {
+      // Non-admin users can only update their own bookings
       throw new UnauthorizedException("Not authorized to update this booking");
     }
     return this.bookingsService.update(Number(id), updateDto);
   }
 
-  
   @Delete(":id")
   @Roles("admin")
   @UseGuards(JwtAuthGuard, RolesGuard)

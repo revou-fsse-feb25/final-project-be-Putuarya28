@@ -29,10 +29,11 @@ model Booking {
   time        String
   notes       String?
   status      String  @default("pending")
+  trackingCode String?
   orderDetails Json?
   postCallDetails Json?
-  customerId  Int
-  customer    User     @relation(fields: [customerId], references: [id])
+  customerId  Int?
+  customer    User? @relation(fields: [customerId], references: [id])
   createdAt   DateTime @default(now())
   serviceType      String?
   measurementType  String?
@@ -54,6 +55,7 @@ model User {
   profilePic String?
   isConfirmed Boolean  @default(false)
   confirmationToken String?
+  refreshToken String?
   bookings   Booking[] // This line enables the relation from the other side
 }
 

@@ -111,13 +111,6 @@ export class AuthService {
       where: { email: loginDto.email },
     });
 
-    console.log("Login attempt:", loginDto.email, loginDto.password);
-    console.log("User from DB:", user);
-    console.log(
-      "Password match:",
-      user ? await bcrypt.compare(loginDto.password, user.password) : false
-    );
-
     if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException("Invalid credentials");
     }
@@ -127,16 +120,58 @@ export class AuthService {
       );
     }
 
-    // Generate JWT token
+    // Generate access and refresh tokens
     const payload = { id: user.id, email: user.email, role: user.role };
-    const token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: "7d" });
+
+    // Store refresh token in DB
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
     return {
       user: {
         id: user.id,
         email: user.email,
         role: user.role ?? "user",
       },
-      token,
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async refreshToken(userId: number, refreshToken: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.refreshToken) {
+      throw new UnauthorizedException("Refresh token not found.");
+    }
+    if (user.refreshToken !== refreshToken) {
+      throw new UnauthorizedException("Invalid refresh token.");
+    }
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      // Issue new access token
+      const newAccessToken = this.jwtService.sign(
+        { id: user.id, email: user.email, role: user.role },
+        { expiresIn: "15m" }
+      );
+      // Optionally, issue a new refresh token
+      const newRefreshToken = this.jwtService.sign(
+        { id: user.id, email: user.email, role: user.role },
+        { expiresIn: "7d" }
+      );
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken: newRefreshToken },
+      });
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (err) {
+      throw new UnauthorizedException("Invalid or expired refresh token.");
+    }
   }
 }

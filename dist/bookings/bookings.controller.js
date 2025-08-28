@@ -11,11 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookingsController = void 0;
 const common_1 = require("@nestjs/common");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const roles_guard_1 = require("../auth/guards/roles.guard");
+const express_1 = require("express");
 const bookings_service_1 = require("./bookings.service");
 const create_booking_dto_1 = require("./dto/create-booking.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
@@ -41,17 +43,24 @@ let BookingsController = class BookingsController {
     async findAll() {
         return this.bookingsService.findAll();
     }
-    async getCustomerBookings(customerId) {
+    async getCustomerBookings(customerId, req) {
+        const user = req.user;
+        console.log("[DEBUG] getCustomerBookings - User from JWT:", user, "customerId param:", customerId);
         return this.bookingsService.findByCustomer(Number(customerId));
     }
     async update(id, updateDto, req) {
         const user = req.user;
+        console.log("[DEBUG] User from JWT:", user);
         if (!user)
             throw new common_1.UnauthorizedException("User not authenticated");
         const booking = await this.bookingsService.findById(Number(id));
         if (!booking)
             throw new common_1.UnauthorizedException("Booking not found");
-        if (user.role !== "admin" && booking.customerId !== user.id) {
+        if (user.role === "admin") {
+            // Admin can update any booking
+        }
+        else if (booking.customerId !== user.id) {
+            // Non-admin users can only update their own bookings
             throw new common_1.UnauthorizedException("Not authorized to update this booking");
         }
         return this.bookingsService.update(Number(id), updateDto);
@@ -67,7 +76,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_booking_dto_1.CreateBookingDto, Object]),
+    __metadata("design:paramtypes", [create_booking_dto_1.CreateBookingDto, typeof (_a = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _a : Object]),
     __metadata("design:returntype", Promise)
 ], BookingsController.prototype, "create", null);
 __decorate([
@@ -81,8 +90,9 @@ __decorate([
     (0, common_1.Get)("customer/:customerId"),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("customerId")),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, typeof (_b = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], BookingsController.prototype, "getCustomerBookings", null);
 __decorate([
@@ -92,7 +102,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, Object, typeof (_c = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], BookingsController.prototype, "update", null);
 __decorate([

@@ -6,6 +6,33 @@ This backend is built with Node.js, TypeScript, and Prisma ORM, and uses a Postg
 
 ---
 
+## Features
+
+- User registration, authentication, and profile management
+- Admin and customer roles
+- Booking management (create, update, delete, view)
+- Available dates management
+- Design image cataloging
+- Order management
+
+---
+
+## Deployment
+
+- [Backend Live Demo](https://dummy-backend-deployment-url.com)
+
+---
+
+## Screenshots
+
+| API Example                                                                       | Admin Panel                                                                        |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| ![API Screenshot](https://dummyimage.com/400x200/cccccc/000000&text=API+Response) | ![Admin Screenshot](https://dummyimage.com/400x200/cccccc/000000&text=Admin+Panel) |
+
+---
+
+---
+
 ## Table of Contents
 
 - [Project Structure](#project-structure)

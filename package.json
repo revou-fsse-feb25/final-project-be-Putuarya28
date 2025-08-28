@@ -6,7 +6,7 @@
     "@nestjs/jwt": "11.0.0",
     "@nestjs/passport": "11.0.5",
     "@nestjs/platform-express": "^10.4.20",
-    "@prisma/client": "6.12.0",
+    "@prisma/client": "6.14.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
@@ -19,9 +19,8 @@
     "rxjs": "^7.8.1"
   },
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main.js",
+    "start": "ts-node src/main.ts",
+    "start:dev": "ts-node-dev --respawn src/main.ts",
     "build": "tsc -p tsconfig.json",
     "test": "jest"
   },
@@ -29,6 +28,7 @@
     "@nestjs/cli": "^11.0.7",
     "@nestjs/testing": "^10.4.20",
     "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.0.0",
@@ -36,6 +36,8 @@
     "@types/passport-jwt": "^4.0.1",
     "jest": "^30.0.5",
     "prisma": "^6.14.0",
-    "ts-jest": "^29.4.0"
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
   }
 }

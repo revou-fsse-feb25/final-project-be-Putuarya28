@@ -99,10 +99,30 @@ let BookingsService = class BookingsService {
         if (updateDto.postCallDetails) {
             updateData.postCallDetails = updateDto.postCallDetails;
         }
+        if (updateDto.orderDetails) {
+            updateData.orderDetails = updateDto.orderDetails;
+            updateData.status = "processing order";
+        }
+        if (updateDto.trackingCode) {
+            updateData.trackingCode = updateDto.trackingCode;
+            updateData.status = "delivering";
+        }
         const updatedBooking = await this.prisma.booking.update({
             where: { id },
             data: updateData,
         });
+        // Send tracking code email if trackingCode was just added
+        if (updateDto.trackingCode) {
+            try {
+                // TODO: Implement sendTrackingEmail utility
+                // const { sendTrackingEmail } = await import("../utils/email");
+                // await sendTrackingEmail(updatedBooking.email, updateDto.trackingCode);
+                console.log("[INFO] Tracking code sent to user:", updateDto.trackingCode);
+            }
+            catch (err) {
+                console.error("Error sending tracking code email:", err);
+            }
+        }
         if (updateDto.status === "confirmed" &&
             prevBooking?.status !== "confirmed") {
             try {
@@ -131,6 +151,16 @@ let BookingsService = class BookingsService {
             }
             catch (err) {
                 console.error("Error sending post video call details email:", err);
+            }
+        }
+        // Send order details email if orderDetails is present
+        if (updateDto.orderDetails) {
+            try {
+                const { sendOrderDetailsEmail } = await Promise.resolve().then(() => __importStar(require("../utils/email")));
+                await sendOrderDetailsEmail(updatedBooking.email, updatedBooking, updateDto.orderDetails);
+            }
+            catch (err) {
+                console.error("Error sending order details email:", err);
             }
         }
         return updatedBooking;

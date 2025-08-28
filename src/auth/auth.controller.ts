@@ -26,6 +26,11 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Post("refresh")
+  async refresh(@Body() body: { userId: number; refreshToken: string }) {
+    return this.authService.refreshToken(body.userId, body.refreshToken);
+  }
+
   @Get("confirm")
   async confirm(@Query("token") token: string, @Res() res: Response) {
     try {

@@ -11,9 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const express_1 = require("express");
 const auth_service_1 = require("./auth.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 let AuthController = class AuthController {
@@ -27,12 +29,19 @@ let AuthController = class AuthController {
     async login(loginDto) {
         return this.authService.login(loginDto);
     }
-    async confirm(token) {
+    async refresh(body) {
+        return this.authService.refreshToken(body.userId, body.refreshToken);
+    }
+    async confirm(token, res) {
         try {
-            return await this.authService.confirmAccount(token);
+            await this.authService.confirmAccount(token);
+            // Redirect to frontend login page after successful confirmation
+            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+            return res.redirect(`${frontendUrl}/login?confirmed=1`);
         }
         catch (err) {
-            throw new common_1.BadRequestException(err?.message || "Confirmation failed");
+            // Optionally, redirect to an error page or return a message
+            return res.status(400).send(err?.message || "Confirmation failed");
         }
     }
 };
@@ -52,10 +61,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
+    (0, common_1.Post)("refresh"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
+__decorate([
     (0, common_1.Get)("confirm"),
     __param(0, (0, common_1.Query)("token")),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, typeof (_a = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _a : Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "confirm", null);
 exports.AuthController = AuthController = __decorate([

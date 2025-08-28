@@ -19,6 +19,7 @@ async function createAdmin() {
       email,
       password: hashedPassword,
       role: "admin",
+      isConfirmed: true,
     },
   });
 

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DesignImagesController = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,6 +19,7 @@ const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const platform_express_1 = require("@nestjs/platform-express");
 const design_images_service_1 = require("./design-images.service");
+const express_1 = require("express");
 let DesignImagesController = class DesignImagesController {
     constructor(service) {
         this.service = service;
@@ -52,7 +54,7 @@ __decorate([
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Express !== "undefined" && (_a = express_1.Express.Multer) !== void 0 && _a.File) === "function" ? _b : Object, Object]),
     __metadata("design:returntype", Promise)
 ], DesignImagesController.prototype, "upload", null);
 __decorate([

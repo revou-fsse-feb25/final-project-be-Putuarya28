@@ -4,7 +4,6 @@ import { CreateBookingDto } from "./dto/create-booking.dto";
 
 @Injectable()
 export class BookingsService {
-  
   async findById(id: number) {
     return this.prisma.booking.findUnique({ where: { id } });
   }
@@ -49,7 +48,6 @@ export class BookingsService {
     return this.prisma.booking.findMany();
   }
 
-  
   async findByCustomer(customerId: number) {
     return this.prisma.booking.findMany({
       where: { customerId: customerId },
@@ -57,21 +55,41 @@ export class BookingsService {
     });
   }
 
-  
   async update(id: number, updateDto: any) {
-    
     const prevBooking = await this.prisma.booking.findUnique({ where: { id } });
-    
+
     let updateData = { ...updateDto };
     if (updateDto.postCallDetails) {
       updateData.postCallDetails = updateDto.postCallDetails;
+    }
+    if (updateDto.orderDetails) {
+      updateData.orderDetails = updateDto.orderDetails;
+      updateData.status = "processing order";
+    }
+    if (updateDto.trackingCode) {
+      updateData.trackingCode = updateDto.trackingCode;
+      updateData.status = "delivering";
     }
     const updatedBooking = await this.prisma.booking.update({
       where: { id },
       data: updateData,
     });
 
-    
+    // Send tracking code email if trackingCode was just added
+    if (updateDto.trackingCode) {
+      try {
+        // TODO: Implement sendTrackingEmail utility
+        // const { sendTrackingEmail } = await import("../utils/email");
+        // await sendTrackingEmail(updatedBooking.email, updateDto.trackingCode);
+        console.log(
+          "[INFO] Tracking code sent to user:",
+          updateDto.trackingCode
+        );
+      } catch (err) {
+        console.error("Error sending tracking code email:", err);
+      }
+    }
+
     if (
       updateDto.status === "confirmed" &&
       prevBooking?.status !== "confirmed"
@@ -84,7 +102,6 @@ export class BookingsService {
       }
     }
 
-    
     if (
       prevBooking?.status === "confirmed" &&
       ((updateDto.date && updateDto.date !== prevBooking.date) ||
@@ -102,7 +119,6 @@ export class BookingsService {
       }
     }
 
-    
     if (updateDto.postCallDetails) {
       try {
         const { sendPostCallNotesEmail } = await import("../utils/email");
@@ -116,10 +132,23 @@ export class BookingsService {
       }
     }
 
+    // Send order details email if orderDetails is present
+    if (updateDto.orderDetails) {
+      try {
+        const { sendOrderDetailsEmail } = await import("../utils/email");
+        await sendOrderDetailsEmail(
+          updatedBooking.email,
+          updatedBooking,
+          updateDto.orderDetails
+        );
+      } catch (err) {
+        console.error("Error sending order details email:", err);
+      }
+    }
+
     return updatedBooking;
   }
 
-  
   async remove(id: number) {
     return this.prisma.booking.delete({ where: { id } });
   }
