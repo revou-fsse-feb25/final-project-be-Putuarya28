@@ -23,12 +23,6 @@ This backend is built with Node.js, TypeScript, and Prisma ORM, and uses a Postg
 
 ---
 
-## Screenshots
-
-| API Example                                                                       | Admin Panel                                                                        |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| ![API Screenshot](https://dummyimage.com/400x200/cccccc/000000&text=API+Response) | ![Admin Screenshot](https://dummyimage.com/400x200/cccccc/000000&text=Admin+Panel) |
-
 ---
 
 ---
