@@ -41,8 +41,8 @@ export class AuthService {
     });
 
     // Send confirmation email
-    const apiUrl = process.env.BACKEND_URL || "http://localhost:3000";
-    const confirmUrl = `${apiUrl}/auth/confirm?token=${confirmationToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+    const confirmUrl = `${frontendUrl}/login?token=${confirmationToken}`;
 
     // Configure nodemailer transporter (use environment variables for real credentials)
     const transporter = nodemailer.createTransport({
@@ -58,7 +58,7 @@ export class AuthService {
       from: "noreply@yourapp.com",
       to: createUserDto.email,
       subject: "Confirm your account",
-      html: `<p>Thank you for registering! Please confirm your account by clicking the link below:</p><p><a href="${confirmUrl}">${confirmUrl}</a></p>`,
+      html: `<p>Thank you for registering! Please confirm your account by clicking the link below:</p><p><a href="${confirmUrl}">Confirm your email</a></p>`,
     });
 
     return {

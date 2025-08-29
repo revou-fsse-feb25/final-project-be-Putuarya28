@@ -19,7 +19,7 @@ This backend is built with Node.js, TypeScript, and Prisma ORM, and uses a Postg
 
 ## Deployment
 
-- [Backend Live Demo](https://dummy-backend-deployment-url.com)
+- [Backend Live Demo](https://final-project-be-putuarya28.onrender.com/)
 
 ---
 
