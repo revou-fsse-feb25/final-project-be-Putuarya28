@@ -34,7 +34,11 @@ export class AuthController {
   @Get("confirm")
   async confirm(@Query("token") token: string, @Res() res: Response) {
     try {
-      await this.authService.confirmAccount(token);
+      console.log("[CONFIRM CONTROLLER] Raw token from query:", token);
+      // Decode token in case of URL encoding issues
+      const decodedToken = decodeURIComponent(token);
+      console.log("[CONFIRM CONTROLLER] Decoded token:", decodedToken);
+      await this.authService.confirmAccount(decodedToken);
       // Redirect to frontend login page after successful confirmation
       const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
       return res.redirect(`${frontendUrl}/login?confirmed=1`);

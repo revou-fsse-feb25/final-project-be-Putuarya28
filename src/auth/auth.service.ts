@@ -69,13 +69,21 @@ export class AuthService {
 
   async confirmAccount(token: string) {
     if (!token) throw new Error("Missing confirmation token");
-    console.log("[CONFIRM] Received token:", token);
+    console.log("[CONFIRM SERVICE] Received token:", token);
     // Find PendingUser by token
     const pending = await this.prisma.pendingUser.findUnique({
       where: { confirmationToken: token },
     });
-    console.log("[CONFIRM] PendingUser found:", pending);
-    if (!pending) throw new Error("Invalid or expired token");
+    if (!pending) {
+      // Log all tokens for debugging
+      const allPending = await this.prisma.pendingUser.findMany();
+      console.log(
+        "[CONFIRM SERVICE] All pending tokens:",
+        allPending.map((u) => u.confirmationToken)
+      );
+      throw new Error("Invalid or expired token");
+    }
+    console.log("[CONFIRM SERVICE] PendingUser found:", pending);
 
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
