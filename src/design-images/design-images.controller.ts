@@ -40,7 +40,8 @@ export class DesignImagesController {
     console.log("UPLOAD HEADERS:", req.headers);
     console.log("UPLOAD USER:", req.user);
     if (!file) throw new BadRequestException("No file uploaded");
-    const imageUrl = `http://localhost:3000/uploads/${file.filename}`;
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
+    const imageUrl = `${backendUrl}/uploads/${file.filename}`;
     await this.service.create({ ...body, imageUrl });
     return this.service.findAll(body.label);
   }

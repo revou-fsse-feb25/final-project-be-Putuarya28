@@ -48,7 +48,8 @@ app.post(
   async (req: Request, res: Response) => {
     const { label, title, description } = req.body;
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    const imageUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
+    const imageUrl = `${backendUrl}/uploads/${req.file.filename}`;
     await prisma.designImage.create({
       data: { label, title, description, imageUrl },
     });
