@@ -10,7 +10,7 @@ async function bootstrap() {
   });
   app.enableCors({
     origin: [
-      "https://final-project-fe-putuarya28-production.up.railway.app",
+      "https://final-project-fe-putuarya28-production-18f9.up.railway.app",
       "http://localhost:3001",
     ],
     credentials: true,
