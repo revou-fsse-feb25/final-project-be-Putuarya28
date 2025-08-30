@@ -115,19 +115,29 @@ export class AuthService {
   }
 
   async login(loginDto: { email: string; password: string }) {
+    console.log("[LOGIN DEBUG] Attempting login for:", loginDto.email);
     const user = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
     });
-
-    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
+    if (!user) {
+      console.log("[LOGIN DEBUG] User not found");
+      throw new UnauthorizedException("Invalid credentials");
+    }
+    const passwordMatch = await bcrypt.compare(
+      loginDto.password,
+      user.password
+    );
+    if (!passwordMatch) {
+      console.log("[LOGIN DEBUG] Password mismatch for user:", loginDto.email);
       throw new UnauthorizedException("Invalid credentials");
     }
     if (!user.isConfirmed) {
+      console.log("[LOGIN DEBUG] User not confirmed:", loginDto.email);
       throw new UnauthorizedException(
         "Please confirm your email before logging in."
       );
     }
-
+    console.log("[LOGIN DEBUG] Login successful for:", loginDto.email);
     // Generate access and refresh tokens
     const payload = { id: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
