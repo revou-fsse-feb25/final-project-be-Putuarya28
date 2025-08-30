@@ -8,7 +8,13 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, "..", "uploads"), {
     prefix: "/uploads/",
   });
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      "https://final-project-fe-putuarya28-production.up.railway.app",
+      "http://localhost:3001",
+    ],
+    credentials: true,
+  });
   await app.listen(3000);
 }
 bootstrap();
